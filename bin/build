@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+require 'winrm'
+
+endpoint = 'http://localhost:55985/wsman'
+user = 'vagrant'
+password = 'vagrant'
+
+options = {
+  :user => user,
+  :pass => password,
+  :basic_auth_only => true
+}
+
+winrm = WinRM::WinRMWebService.new(endpoint, :plaintext, options)
+
+build_command = <<EOL
+"c:\\Program Files (x86)\\Microsoft Visual Studio 12.0\\VC\\vcvarsall.bat" amd64 & c:\\vagrant\\handmade\\code\\build.bat
+EOL
+
+winrm.cmd(build_command) do |stdout, stderr|
+  STDOUT.print stdout
+  STDERR.print stderr
+end
